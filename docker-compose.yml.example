@@ -1,0 +1,14 @@
+version: "3.9"
+
+services: 
+  pacoloco:
+    container_name: pacoloco
+    build: https://github.com/informagier/pacoloco.git
+    image: pacoloco
+    ports:
+      - "9129:9129/tcp"
+    volumes: 
+      - './pacoloco/:/etc/pacoloco/'
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
