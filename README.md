@@ -18,18 +18,15 @@ _Pacoloco_ does not mirror the whole Arch repository. It only downloads files ne
 You can think of pacoloco as a lazy Arch mirror.
 
 ## Install
-Install [pacoloco-git package](https://aur.archlinux.org/packages/pacoloco-git/) from AUR repository.
-Then start its systemd service: `# systemctl start pacoloco`.
 
-## Build from sources
-Optionally you can build the binary from sources using `go build` command.
+Use `docker-compose` with a compose file like in `docker-compose.yml.example`. Before starting it, you should configure the server.
 
 ## Configure
-The server configuration is located at `/etc/pacoloco.yaml`. Here is an example how the config file looks like:
+The server configuration is located inside the mounted volume in the root-directory with the name docker-compose.yml. Here is an example how the config file looks like:
 
 ```
 port: 9129
-cache_dir: /var/cache/pacoloco
+cache_dir: /etc/pacoloco/cache
 purge_files_after: 360000 # 360000 seconds or 100 hours
 download_timeout: 200 # 200 seconds
 repos:
@@ -42,9 +39,9 @@ repos:
   sublime:
     url: https://download.sublimetext.com/arch/stable/x86_64
 ```
-* `cache_dir` is the cache directory, this location needs to read/writable by the server process.
+* `cache_dir` is the cache directory, this location needs to read/writable by the server process. It is helpful, to have the `cache_dir` pointing to `/etc/pacoloco/cache`, because it is in the volume and therefore portable across multiple versions of the container.
 * `purge_files_after` specifies inactivity duration (in seconds) after which the file should be removed from the cache. This functionality uses unix "AccessTime" field to find out inactive files. Default value is `0` that means never run the purging.
-* `port` is the server port.
+* `port` is the server port inside the container.
 * `download_timeout` is a timeout (in seconds) for internet->cache downloads. If a remote server gets slow and file download takes longer than this will be terminated. Default value is `0` that means no timeout.
 * `repos` is a list of repositories to mirror. Each repo needs `name` and url of its Arch mirrors. Note that url can be specified either with `url` or `urls` properties, one and only one can be used for each repo configuration.
 
