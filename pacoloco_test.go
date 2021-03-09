@@ -48,14 +48,14 @@ func TestPathMatcher(t *testing.T) {
 	pathCheck("/repo/foo/bar/bazzz/eeee/webkit2x86_64.pkg.tar.zst", "foo", "/bar/bazzz/eeee", "webkit2x86_64.pkg.tar.zst")
 }
 
-func TestForceCheckAtServer(t *testing.T) {
+func TestIsMutableFile(t *testing.T) {
 	forceCheck := func(name string) {
-		if !forceCheckAtServer(name) {
+		if !isMutableFile(name) {
 			t.Errorf("File '%v' expected to force check at server", name)
 		}
 	}
 	doNotForceCheck := func(name string) {
-		if forceCheckAtServer(name) {
+		if isMutableFile(name) {
 			t.Errorf("File '%v' expected to not force check at server", name)
 		}
 	}

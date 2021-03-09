@@ -59,7 +59,7 @@ func pacolocoHandler(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func forceCheckAtServer(fileName string) bool {
+func isMutableFile(fileName string) bool {
 	// Suffixes for mutable files. We need to check the files modification date at the server.
 	forceCheckFiles := []string{".db", ".db.sig", ".files"}
 
@@ -87,6 +87,7 @@ func handleRequest(w http.ResponseWriter, req *http.Request) error {
 	repoName := matches[1]
 	path := matches[2]
 	fileName := matches[3]
+	isMutable := isMutableFile(fileName)
 
 	repo, ok := config.Repos[repoName]
 	if !ok {
@@ -103,9 +104,21 @@ func handleRequest(w http.ResponseWriter, req *http.Request) error {
 	}
 
 	filePath := filepath.Join(cachePath, fileName)
+	if isMutable {
+		filePath = filepath.Join(cachePath, path, fileName)
+
+		// create cache directory for mutable files if needed
+		mutableCachePath := filepath.Join(cachePath, path)
+		if _, err := os.Stat(mutableCachePath); os.IsNotExist(err) {
+			err := os.MkdirAll(mutableCachePath, os.ModePerm)
+			if err != nil {
+				return err
+			}
+		}
+	}
 	stat, err := os.Stat(filePath)
 	noFile := err != nil
-	requestFromServer := noFile || forceCheckAtServer(fileName)
+	requestFromServer := noFile || isMutable
 
 	if requestFromServer {
 		mutexKey := repoName + ":" + fileName
@@ -127,7 +140,7 @@ func handleRequest(w http.ResponseWriter, req *http.Request) error {
 		// refresh the data in case if the file has been download while we were waiting for the mutex
 		stat, err = os.Stat(filePath)
 		noFile = err != nil
-		requestFromServer = noFile || forceCheckAtServer(fileName)
+		requestFromServer = noFile || isMutable
 	}
 
 	var served bool
