@@ -1,7 +1,7 @@
 # Pacoloco - caching proxy server for pacman
-Pacoloco is a web server that acts if it was an Arch Linux pacman repository.
+Pacoloco is a web server that acts if it was an Arch/Manjaro Linux pacman repository.
 Every time pacoloco server gets a request from user it downloads this file from
-real Arch Linux mirror and bypasses it to the user. Additionally pacoloco
+real Arch/Manjaro Linux mirror and bypasses it to the user. Additionally pacoloco
 saves this file to local filesystem cache and serves it to the future users.
 
 ## How does it help?
@@ -14,8 +14,8 @@ Each of these users needs to download the same set of files. _Pacoloco_ allows t
 the Internet workload by caching pacman files content and serving it over
 fast local network.
 
-_Pacoloco_ does not mirror the whole Arch repository. It only downloads files needed by local users.
-You can think of pacoloco as a lazy Arch mirror.
+_Pacoloco_ does not mirror the whole Arch/Manjaro repository. It only downloads files needed by local users.
+You can think of pacoloco as a lazy Arch/Manjaro mirror.
 
 ## Install
 
@@ -110,3 +110,30 @@ Server = http://yourpacoloco:9129/repo/archlinux_$arch/$arch/$repo
 ```
 
 Please note that `archlinux_$arch` is the repo name in pacoloco.yaml.
+
+## Manjaro
+Manjaro offeres multiple branches for the same architecture.
+Machines with different branches but the same architecture can use the same repo like this:
+```
+repos:
+  manjaro:
+    urls:
+    - http://manjaro.moson.eu
+    - http://manjaro.re
+    - http://www.uex.dk/public/manjaro
+```
+
+For stable
+```
+Server = http://yourpacoloco:9129/repo/manjaro/stable/$repo/$arch
+```
+
+For testing
+```
+Server = http://yourpacoloco:9129/repo/manjaro/testing/$repo/$arch
+```
+
+For unstable
+```
+Server = http://yourpacoloco:9129/repo/manjaro/unstable/$repo/$arch
+```
